@@ -1,8 +1,16 @@
+from multiprocessing import Event
+from sre_constants import SUCCESS
 from flask import Flask, jsonify
-from flask_restful import Resource, Api
+from flask_cors import CORS
+from flask_restful import Api, abort
+
+from src.models import *
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
+setup_db(app)
+# db_drop_and_create_all()
 
 @app.route("/")
 def health():
@@ -12,9 +20,14 @@ def health():
 def error():
   return { "success": False }
 
-@app.route("/events")
-def events():
-  return { "response": "success"}
+# @app.route("/events")
+# def events():
+#   try:
+#     events = Event.query.order_by(Event.start_date).all()
+#     event = [evt.start_date for evt in events] 
+#     return { "Success": True, "events": event }
+#   except: 
+#     abort(500)
 
 @app.route("/login/<user_name>")
 def login(user_name):
@@ -31,7 +44,6 @@ def register_event():
 @app.route("/rsvp")
 def rsvp():
   return { "response": "success"}
-
 
 if __name__ == "__main__":
   app.run(debug=True)

@@ -1,2 +1,2 @@
 # volleyball-meetup-chicago-backend
-Python/Django
+Python Flask API
