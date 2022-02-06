@@ -1,3 +1,4 @@
+import datetime
 from multiprocessing import Event
 from sre_constants import SUCCESS
 from flask import Flask, jsonify
@@ -20,14 +21,14 @@ def health():
 def error():
   return { "success": False }
 
-# @app.route("/events")
-# def events():
-#   try:
-#     events = Event.query.order_by(Event.start_date).all()
-#     event = [evt.start_date for evt in events] 
-#     return { "Success": True, "events": event }
-#   except: 
-#     abort(500)
+@app.route("/events")
+def events():
+  try:
+    events = Event.query.order_by(Event.start_date).all()
+    event = [evt.title for evt in events] 
+    return { "events": event }
+  except:
+    abort(500)
 
 @app.route("/login/<user_name>")
 def login(user_name):
@@ -39,8 +40,13 @@ def sign_up():
 
 @app.route("/register_event")
 def register_event():
-  return { "response": "success"}
-
+  try:
+    event = Event("Secret Saturday", datetime.datetime.now())
+    event.insert()
+    return {"message": "event created"}
+  except:
+    abort(500)
+    
 @app.route("/rsvp")
 def rsvp():
   return { "response": "success"}
