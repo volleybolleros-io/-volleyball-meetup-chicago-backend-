@@ -17,6 +17,8 @@ def db_drop_and_create_all():
     db.drop_all()
     db.create_all()
 
+# The Event table to store events that represents games on the calendar. A User can register to one or more Events.
+
 class Event(db.Model):
     __tablename__ = 'events'
     id = Column(Integer, primary_key=True)
@@ -32,6 +34,42 @@ class Event(db.Model):
             'id': self.id,
             'title': self.title,
             'start_date': self.start_date
+        }
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+# The User table to store users which represents playes that can register to events.
+
+class Username(db.Model):
+    __tablename__ = 'usernames'
+    id = Column(Integer, primary_key=True)
+    email = Column(String(100), unique=True)
+    password = Column(String(100))
+    name = Column(String(100))
+    last_login = Column(db.DateTime)
+
+    def __init__(self, name, email, password, last_login):
+        self.name = name
+        self.email = email
+        self.password = password
+        self.last_login = last_login
+
+    def details(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'password': '***',
+            'last_login': self.last_login
         }
 
     def insert(self):
