@@ -31,6 +31,33 @@ To get a local copy up and running follow these simple example steps.
 
 1. [Python 3.10.1](https://docs.python.org/3/tutorial/)
 1. [PostgreSQL](https://www.postgresql.org/download/)
+1. [Heroku CLI](https://devcenter.heroku.com/articles/getting-started-with-python#set-up)
+
+### Deployment
+
+1. FIRST TIME LOCAL - Run PostgreSQL server and make sure to create a db for development. Run PostgreSQL commands to create a db:
+   ```sh
+   psql --version
+   # psql (PostgreSQL) 14.x
+   createdb python_getting_started
+   python manage.py db init
+   ```
+1. For DB updates:
+   ```sh
+   # Update DB locally
+   python manage.py db migrate
+   python manage.py db upgrade
+   # Update DB via Heroku CLI
+   heroku config --app backend-volleyball-chicago
+   heroku pg:psql --app backend-volleyball-chicago
+   > select * from events;
+   > exit
+   heroku run python3 manage.py db upgrade --app backend-volleyball-chicago
+   ```
+1. Test the app from curl or browser:
+   ```sh
+    curl https://backend-volleyball-chicago.herokuapp.com/
+   ```
 
 ### Installation
 
@@ -40,7 +67,7 @@ To get a local copy up and running follow these simple example steps.
    ```
 
 2. CD into the ptoject folder
-   ```sh 
+   ```sh
    cd volleyball-meetup-chicago-backend
    ```
 3. Create a Virtual Environment
@@ -57,7 +84,12 @@ To get a local copy up and running follow these simple example steps.
    ```
 6. Run the App
    ```sh
-   python3 main.py
+   python main.py
+   ```
+
+7. Test the app from curl or browser:
+   ```sh
+    curl http://127.0.0.1:5000/
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
