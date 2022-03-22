@@ -1,4 +1,3 @@
-import datetime
 from multiprocessing import Event
 from sre_constants import SUCCESS
 from flask import Flask, request
@@ -12,7 +11,11 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 setup_db(app)
-# db_drop_and_create_all()
+
+# TODO
+is_prod = False
+if is_prod:
+  db_drop_and_create_all()
 
 @app.route("/")
 def health():
@@ -36,7 +39,7 @@ def login():
   email = request.form.get("email")
   password = request.form.get("password")
 
-  user = Username.query.filter_by(email=email).first()
+  user = User.query.filter_by(email=email).first()
 
   if not user or not check_password_hash(user.password, password):
     return {"message": "User does not exist or wrong credentials!"}
@@ -44,25 +47,25 @@ def login():
   user.last_login = datetime.datetime.now()
   user.update()
 
-  return {"message": f"Welcome back {user.name}! Last login: {user.last_login:%Y-%m-%d %H:%M}"}
+  return {"message": f"Welcome back {user.firstname} {user.lastname}! Last login: {user.last_login:%Y-%m-%d %H:%M}"}
 
 @app.route("/signup", methods=["POST"])
 def signup_post():
-  name = request.form.get("name")
+  firstname = request.form.get("firstname")
+  lastname = request.form.get("lastname")
   email = request.form.get("email")
   password = request.form.get("password")
-  last_login = datetime.datetime.now()
 
-  user = Username.query.filter_by(email=email).first()
+  user = User.query.filter_by(email=email).first()
 
   if user:
-    return { "message": f"ERROR: {user.name} already exists."}
+    return { "message": f"ERROR: user already exists."}
 
   try:
-    new_user = Username(name=name, email=email, password=generate_password_hash(password, method="sha256"), last_login=last_login)
+    new_user = User(firstname=firstname, lastname=lastname, email=email, password=generate_password_hash(password, method="sha256"))
     new_user.insert()
 
-    return { "message": f"Welcome {new_user.name}!" }
+    return { "message": f"Welcome {new_user.firstname} {new_user.lastname}!" }
   except:
     abort(500)
 
