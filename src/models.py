@@ -53,15 +53,17 @@ class RSVP(MixinAsDict, db.Model):
 class Event(MixinAsDict, db.Model):
     __tablename__ = 'event'
     id = Column(Integer, primary_key=True)
-    title = Column(String(80), unique=False)
+    title = Column(String(80))
+    description = Column(String(250))
     start_date = Column(db.DateTime)
     rsvp = relationship(RSVP, backref='event')
     has_rsvp = column_property(
         exists().where(RSVP.event_id == id)
     )
 
-    def __init__(self, title, start_date):
+    def __init__(self, title, description, start_date):
         self.title = title
+        self.description = description
         self.start_date = start_date
 
     def insert(self):
@@ -88,14 +90,12 @@ class User(MixinAsDict, MixinGetByEmail, db.Model):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     password = Column(String(100))
-    firstname = Column(String(50))
-    lastname = Column(String(50))
+    fullname = Column(String(50))
     last_login = Column(db.DateTime)
     rsvp = relationship(RSVP, backref='user')
 
-    def __init__(self, firstname, lastname, email, password):
-        self.firstname = firstname
-        self.lastname = lastname
+    def __init__(self, fullname, email, password):
+        self.fullname = fullname
         self.email = email
         self.password = password
         self.last_login = datetime.datetime.now()

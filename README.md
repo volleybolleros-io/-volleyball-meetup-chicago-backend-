@@ -74,17 +74,21 @@ The CI/CD uses GitHub Actions. Take a look to `.github/workflows/main.yml` to un
    psql --version
    # psql (PostgreSQL) 14.x
    createdb python_getting_started
+   source ./venv/bin/activate
    python manage.py db init
    ```
 1. For DB updates (like model changes):
    ```sh
    # Update DB locally
+   source ./venv/bin/activate
    python manage.py db migrate
-   # Update DB via Heroku CLI
+   # Verify app is up by getting app config
+   heroku login
    heroku config --app backend-volleyball-chicago
    heroku pg:psql --app backend-volleyball-chicago
    > select * from events;
    > exit
+   # Update DB via Heroku CLI
    heroku run python3 manage.py db upgrade --app backend-volleyball-chicago
    ```
 1. Test the app from curl or browser:

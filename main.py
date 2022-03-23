@@ -12,8 +12,7 @@ CORS(app)
 api = Api(app)
 setup_db(app)
 
-# TODO
-is_prod = False
+is_prod = False # FIXME
 if is_prod:
   db_drop_and_create_all()
 
@@ -29,8 +28,8 @@ def error():
 def events():
   try:
     events = Event.query.order_by(Event.start_date).all()
-    event = [evt.title for evt in events]
-    return { "events": event }
+    events_as_dict = [evt.as_dict() for evt in events]
+    return { "events": events_as_dict }
   except:
     abort(500)
 
@@ -47,40 +46,48 @@ def login():
   user.last_login = datetime.datetime.now()
   user.update()
 
-  return {"message": f"Welcome back {user.firstname} {user.lastname}! Last login: {user.last_login:%Y-%m-%d %H:%M}"}
+  return {"message": user.as_dict()}
 
 @app.route("/signup", methods=["POST"])
 def signup_post():
-  firstname = request.form.get("firstname")
-  lastname = request.form.get("lastname")
+  fullname = request.form.get("name")
   email = request.form.get("email")
   password = request.form.get("password")
 
   user = User.query.filter_by(email=email).first()
 
   if user:
-    return { "message": f"ERROR: user already exists."}
+    return { "message": "ERROR: user already exists."}
 
   try:
-    new_user = User(firstname=firstname, lastname=lastname, email=email, password=generate_password_hash(password, method="sha256"))
+    new_user = User(fullname=fullname, email=email, password=generate_password_hash(password, method="sha256"))
     new_user.insert()
 
-    return { "message": f"Welcome {new_user.firstname} {new_user.lastname}!" }
+    return { "message": new_user.as_dict() }
   except:
     abort(500)
 
-@app.route("/register_event")
+@app.route("/register-event", methods=["POST"])
 def register_event():
+  title = request.form.get("title")
+  description = request.form.get("description")
+  start_date = request.form.get("start_date") # Assuming this is ISO 8601 example: '2018-06-29 08:15:27.243860'
+  date_time_object = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S.%f')
   try:
-    event = Event("Secret Saturday", datetime.datetime.now())
+    event = Event(title, description, date_time_object)
     event.insert()
-    return {"message": f"Event {event.title} created!"}
+    return {"message": event.as_dict()}
   except:
     abort(500)
 
 @app.route("/rsvp")
 def rsvp():
-  return { "response": "success"}
+  try:
+    rsvps = RSVP.query.order_by(RSVP.signed_up_at).all()
+    rsvps_as_dict = [evt.as_dict() for evt in rsvps]
+    return { "rsvps": rsvps_as_dict }
+  except:
+    abort(500)
 
 if __name__ == "__main__":
   app.run(debug=True)

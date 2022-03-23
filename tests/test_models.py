@@ -12,11 +12,11 @@ class DBTestCase(unittest.TestCase):
         db.drop_all()
         db.create_all()
 
-        user = User(firstname="first_name", lastname="last_name", email="test@test.com", password="test_password")
+        user = User(fullname="first_name last_name", email="test@test.com", password="test_password")
         db.session.add(user)
         db.session.commit()
 
-        event = Event(title="test_title", start_date=datetime.datetime.now())
+        event = Event(title="test_title", description="test description", start_date=datetime.datetime.now())
         db.session.add(event)
         db.session.commit()
 
@@ -27,8 +27,7 @@ class DBTestCase(unittest.TestCase):
         user = User.query.filter(User.email == "test@test.com").first()
         self.assertIsNotNone(user)
         self.assertIsNotNone(user.id)
-        self.assertEqual(user.firstname, "first_name")
-        self.assertEqual(user.lastname, "last_name")
+        self.assertEqual(user.fullname, "first_name last_name")
 
     def test_event_model(self):
         event = Event.query.order_by(Event.id).first()
@@ -48,14 +47,15 @@ class DBTestCase(unittest.TestCase):
         self.assertIsNotNone(user_as_dict)
         self.assertEqual(user_as_dict["email"], "test@test.com")
         self.assertEqual(user_as_dict["id"], 1)
-        self.assertEqual(user_as_dict["firstname"], "first_name")
-        self.assertEqual(user_as_dict["lastname"], "last_name")
+        self.assertEqual(user_as_dict["fullname"], "first_name last_name")
         self.assertEqual(user_as_dict["password"], "test_password")
 
         event = Event.query.order_by(Event.id).first()
         event_as_dict = event.as_dict()
         self.assertIsNotNone(event_as_dict)
         self.assertEqual(event_as_dict["title"], "test_title")
+        self.assertEqual(event_as_dict["description"], "test description")
+        self.assertIsNotNone(event_as_dict["start_date"])
 
     def test_has_event(self):
         user = User.query.filter(User.email == "test@test.com").first()
