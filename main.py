@@ -12,7 +12,7 @@ CORS(app)
 api = Api(app)
 setup_db(app)
 
-is_prod = False # FIXME
+is_prod = True # FIXME
 if is_prod:
   db_drop_and_create_all()
 
