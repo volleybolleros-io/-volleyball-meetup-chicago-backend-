@@ -20,7 +20,7 @@ jobs:
           pip install -r requirements.txt
           python -m unittest -v tests.test_main
       - name: Run DB migrations
-        run: echo python3 manage.py db upgrade
+        run: echo "python3 manage.py db upgrade"
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}

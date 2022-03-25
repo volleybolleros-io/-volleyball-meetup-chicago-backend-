@@ -89,6 +89,7 @@ class MixinGetByEmail:
 class User(MixinAsDict, MixinGetByEmail, db.Model):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
+    email = Column(String(100), unique=True)
     password = Column(String(100))
     fullname = Column(String(50))
     last_login = Column(db.DateTime)
